@@ -1,7 +1,7 @@
 package com.learning.rxjavatutorial;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.learning.rxjavatutorial.todolist.models.Task;
@@ -9,7 +9,6 @@ import com.learning.rxjavatutorial.todolist.util.DataSource;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -37,6 +36,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Task task) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 Log.d(TAG, "onNext: called"+ Thread.currentThread().getName());
                 Log.d(TAG, "onNext: called"+ task.getDescription());
             }

@@ -11,6 +11,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,6 +25,13 @@ public class MainActivity extends AppCompatActivity {
 
         Observable<Task> taskObservable = Observable
                 .fromIterable(DataSource.createTaskList())
+                .filter(new Predicate<Task>() {
+                    @Override
+                    public boolean test(Task task) throws Exception {
+                        Thread.sleep(5000);
+                        return task.isComplete();
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
@@ -36,11 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(Task task) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 Log.d(TAG, "onNext: called"+ Thread.currentThread().getName());
                 Log.d(TAG, "onNext: called"+ task.getDescription());
             }

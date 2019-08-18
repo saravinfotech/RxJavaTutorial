@@ -7,6 +7,10 @@ import android.util.Log;
 import com.learning.rxjavatutorial.todolist.models.Task;
 import com.learning.rxjavatutorial.todolist.util.DataSource;
 
+import org.reactivestreams.Subscription;
+
+import io.reactivex.Flowable;
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -23,12 +27,45 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        simpleRxIntroduciton();
+
+        sampleFlowableUnboundedBackPressure();
+    }
+
+    private void sampleFlowableUnboundedBackPressure() {
+        Flowable.range(0, 1000000)
+                .onBackpressureBuffer()
+                .observeOn(Schedulers.computation())
+                .subscribe(new FlowableSubscriber<Integer>() {
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                        Log.d(TAG, "onSubscribe: called");
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
+                        Log.d(TAG, "onNext: called " + integer);
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.e(TAG, "onError: called " + t.getLocalizedMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: called");
+                    }
+                });
+    }
+
+    private void simpleRxIntroduciton() {
         Observable<Task> taskObservable = Observable
                 .fromIterable(DataSource.createTaskList())
                 .filter(new Predicate<Task>() {
                     @Override
                     public boolean test(Task task) throws Exception {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                         return task.isComplete();
                     }
                 })
